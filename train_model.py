@@ -3,29 +3,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelEncoder
 import joblib
-
-# Load dataset (IMPORTANT FIX)
 df = pd.read_csv("student-mat.csv", sep=';')
-
-# Encode categorical
 le = LabelEncoder()
 for col in df.select_dtypes(include='object').columns:
     df[col] = le.fit_transform(df[col])
-
-# Features
 X = df[['studytime', 'failures', 'absences', 'health', 'freetime']]
 y = df['G3']
-
-# Split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
-
-# Train
 model = LinearRegression()
 model.fit(X_train, y_train)
-
-# Save model
 joblib.dump(model, "student_model.pkl")
-
 print("✅ Model saved successfully!")
