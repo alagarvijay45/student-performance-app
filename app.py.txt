@@ -1,0 +1,56 @@
+import streamlit as st
+import numpy as np
+import joblib
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load model
+model = joblib.load("student_model.pkl")
+
+st.set_page_config(page_title="Student Predictor", layout="wide")
+
+# Title
+st.markdown("<h1 style='text-align: center; color: #4CAF50;'>🎓 Student Performance Predictor</h1>", unsafe_allow_html=True)
+st.markdown("---")
+
+# Layout
+col1, col2 = st.columns(2)
+
+# Inputs
+with col1:
+    st.subheader("📥 Input Student Details")
+    studytime = st.slider("Study Time (1–4)", 1, 4)
+    failures = st.slider("Past Failures (0–3)", 0, 3)
+    absences = st.slider("Absences", 0, 50)
+    health = st.slider("Health (1–5)", 1, 5)
+    freetime = st.slider("Free Time (1–5)", 1, 5)
+
+# Prediction
+with col2:
+    st.subheader("📊 Prediction Result")
+
+    if st.button("Predict Marks"):
+        input_data = np.array([[studytime, failures, absences, health, freetime]])
+        prediction = model.predict(input_data)[0]
+
+        st.metric(label="Predicted Marks", value=f"{prediction:.2f}")
+
+        # Performance message
+        if prediction >= 75:
+            st.success("🔥 Excellent Performance")
+        elif prediction >= 50:
+            st.warning("⚠️ Average Performance")
+        else:
+            st.error("❗ Needs Improvement")
+
+        # Visualization
+        st.subheader("📈 Performance Indicator")
+        fig = plt.figure()
+        plt.bar(["Predicted"], [prediction])
+        plt.ylim(0, 100)
+        st.pyplot(fig)
+
+st.markdown("---")
+
+# Footer
+st.markdown("Made with ❤️ using Streamlit")
